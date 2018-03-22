@@ -1,4 +1,4 @@
-name: swEnv
+name: TrajectoryGenerator
 dependencies:
   # Necessary Packages
   - python>=3.6
