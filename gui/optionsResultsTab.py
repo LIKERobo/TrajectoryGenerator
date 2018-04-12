@@ -41,6 +41,7 @@ class OptionsResultsTab(wx.Panel):
         self.walks.InsertItem(self.index,  str(self.index))
         self.walks.SetItem(self.index, 1, label)
         self.index += 1
+        return self.index-1
 
     def walk_read(self, idx):
         return self.walks.GetItemText(idx, 1)

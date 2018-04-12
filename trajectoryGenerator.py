@@ -39,6 +39,9 @@ class TrajectoryGeneratorGui(wx.Frame):
         self.cid = -1
         this_directory = os.path.dirname(os.path.abspath(__file__))
         self.config_path = os.sep.join([this_directory, "settings.ini"])
+        self.pos_dict = {}
+        self.vel_dict = {}
+        self.acc_dict = {}
 
     def init_menu(self):
         self.menubar = MenuBar()
@@ -129,13 +132,13 @@ class TrajectoryGeneratorGui(wx.Frame):
         try:
             with h5py.File(pathname, write_mode) as f:
                 for index in selection:
-                    walk_data =self.pNB.ResultsPlot.get_trace_data(index)
                     label = self.oNB.ResultsTab.walk_read(index)
                     if label not in f.keys():
                         f.create_group(label)
                     grp = f[label].create_group(str(len(f[label])+1))
-                    dset = grp.create_dataset("Positions",\
-                                                   data=walk_data.T)
+                    grp.create_dataset("Positions", data=self.pos_dict[index])
+                    grp.create_dataset("Velocity", data=self.vel_dict[index])
+                    grp.create_dataset("Acceleration", data=self.acc_dict[index])
         except OSError:
             msg = "File already open...CLOSE THE DAMN READER!"
             raise OSError(msg)
@@ -151,12 +154,26 @@ class TrajectoryGeneratorGui(wx.Frame):
     def on_rem_results_all(self, evt):
         self.oNB.ResultsTab.walk_clear()
         self.pNB.ResultsPlot.plot_clear_all()
+        self.pos_dict = {}
+        self.vel_dict = {}
+        self.acc_dict = {}
+
         # wx.CallAfter(self.plot_trace)
 
     def on_rem_results_selection(self, evt):
         selection = self.oNB.ResultsTab.walk_get_selected()
         self.oNB.ResultsTab.walk_remove_selected(selection)
         self.pNB.ResultsPlot.plot_remove_selected(selection)
+        for key in selection:
+            self.pos_dict.pop(key, None)
+            self.vel_dict.pop(key, None)
+            self.acc_dict.pop(key, None)
+        i = 0
+        for key in sorted(self.pos_dict.keys()):
+            self.pos_dict[i] = self.pos_dict.pop(key)
+            self.vel_dict[i] = self.vel_dict.pop(key)
+            self.acc_dict[i] = self.acc_dict.pop(key)
+            i += 1
 
     def on_clear_trace(self, evt):
         self.oNB.TraceTab.trace_clear()
@@ -228,9 +245,12 @@ class TrajectoryGeneratorGui(wx.Frame):
             return
         config["path"] = self.image_path
         for i in range(config["nr_runs"]):
-            xres, yres = generate_walk(config)
-            self.pNB.ResultsPlot.add_walk(xres, yres)
-            self.oNB.ResultsTab.add_walk(config["label"])
+            pos, vel, acc = generate_walk(config)
+            self.pNB.ResultsPlot.add_walk(pos[:,0], pos[:,1])
+            index = self.oNB.ResultsTab.add_walk(config["label"])
+            self.pos_dict[index] = pos
+            self.vel_dict[index] = vel
+            self.acc_dict[index] = acc
         # except ValueError:
         #     msg = "Invalid-Values in Settings tab:"
         #     print(msg)
@@ -370,7 +390,17 @@ def generate_walk(config, batch=False):
         if validate_trace(xs, ys, worldMap, batch):
             # return xs, ys, worldMap #nur zum Test
             xfinal, yfinal = add_simple_noise(xs, ys, config["post_noise"])
-            return xfinal, yfinal
+            pos = np.array([xfinal, yfinal]).T
+
+            vx = (xfinal - np.roll(xfinal,1))[1:]
+            vy = (yfinal - np.roll(yfinal,1))[1:]
+            vel = np.array([vx, vy]).T
+
+            ax = (vx - np.roll(vx,1))[1:]
+            ay = (vy - np.roll(vy,1))[1:]
+            acc = np.array([ax, ay]).T
+            return pos, vel, acc
+
         simCount += 1
     print("Could not create a valid walk...I TRIED!!")
     return
@@ -387,9 +417,10 @@ def batch_walk(path):
                     new_grp = f.create_group(label)
                     new_grp.attrs["Type"] = "Trajectory"
                 grp = f[label].create_group(str(count+1))
-                xn, yn = generate_walk(config, batch=True)
-                data = np.array([xn,yn]).T
-                grp.create_dataset("Positions", data=data)
+                pos, vel, acc = generate_walk(config, batch=True)
+                grp.create_dataset("Positions", data=pos)
+                grp.create_dataset("Velocity", data=vel)
+                grp.create_dataset("Acceleration", data=acc)
                 for key in [key for key in config if key != "nr_runs"]:
                     grp.attrs[key] = config[key]
                 count += 1
