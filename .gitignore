@@ -5,4 +5,4 @@ tmp*
 *__pychache__*
 docs/build/*
 .config.yml
-settings.ini
+*.ini

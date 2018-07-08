@@ -13,8 +13,8 @@ class OptionsResultsTab(wx.Panel):
         self.btn_select_all = wx.Button(self, wx.ID_ANY, \
                                         label="Select All")
         self.btn_export = wx.Button(self, wx.ID_ANY, \
-                                    label="Export Walks")
-        self.btn_clear = wx.Button(self, wx.ID_ANY, label="Clear Walks")
+                                    label="Export")
+        self.btn_clear = wx.Button(self, wx.ID_ANY, label="Clear All")
         btn_top_sizer.Add(self.btn_select_all, wx.ALL, 5)
         btn_top_sizer.Add(self.btn_export,  wx.ALL, 5)
         btn_top_sizer.Add(self.btn_clear,  wx.ALL, 5)
