@@ -4,7 +4,7 @@ user-given Waypoints.
 
 <p align="center">
 <img src="docs/images/Example.png">
-<em>Example Trajectories, generated with *TrajectoryGenerator*.</em>
+<em>Example Trajectories, generated with "TrajectoryGenerator".</em>
 </p>
 
 ## Requirements
@@ -39,7 +39,7 @@ This will bring up the main screen of the application.
 
 <p align="center">
 <img src="docs/images/description.png">
-<figcaption>Startup screen of the application, divided into two different halves.</figcaption>
+<em>Start-up screen of the application, divided into two different halves.</em>
 </p>
 
 By default the program starts with an empty Simulation-environment.
@@ -48,7 +48,7 @@ Different Background-Images can be loaded via the menu-item
 
 <p align="center">
 <img src="docs/images/background_edit.gif">
-<figcaption>Loading a different Simulation-environment.</figcaption>
+<em>Loading a different Simulation-environment.</em>
 </p>
 
 
@@ -66,7 +66,7 @@ the left corner on top of the plots.
 
 <p align="center">
 <img src="docs/images/combined.png">
-<figcaption>*Trace*-Plot showing the trace of Waypoints given by the user (*left*) and *Results*-Plot showing 20 generated Trajectories, based on the given *Trace* (*right*).</figcaption>
+<em>"Trace"-Plot showing the trace of Waypoints given by the user (left) and "Results"-Plot showing 20 generated Trajectories, based on the given Trace (right).</em>
 </p>
 
 
@@ -76,7 +76,7 @@ The first tab (*Trace*) displays the Trace of Waypoints the user creates.
 
 <p align="center">
 <img src="docs/images/trace.png">
-<figcaption>*Trace*-Tab with example Trace.</figcaption>
+<em>"Trace"-Tab with example Trace.</em>
 </p>
 
 This Trace is shown as a list of Points in the middle of the tab as an
@@ -104,7 +104,7 @@ following sequence:
 
 <p align="center">
 <img src="docs/images/create_trace.gif">
-<figcaption>Example of different methods to create and manipulate a *Trace*.</figcaption>
+<em>Example of different methods to create and manipulate a "Trace".</em>
 </p>
 
 The second Tab of the right Panel is the `Settings`-Tab.
@@ -113,7 +113,7 @@ generation of the Trajectories.
 
 <p align="center">
 <img src="docs/images/settings.png">
-<figcaption>*Settings*-Tab with example Values.</figcaption>
+<em>"Settings"-Tab with example Values.</em>
 </p>
 
 On top are two Fields to enter the values for the noise, used in the 
@@ -153,7 +153,7 @@ and in the last Tab of the right Panel, the *Results*-Tab.
 
 <p align="center">
 <img src="docs/images/results.png">
-<figcaption>*Results*-Tab on the right with three generated Trajectory-bundles.</figcaption>
+<em>"Results"-Tab on the right with three generated Trajectory-bundles.</em>
 </p>
 
 The *Results*-Tab consists mainly of a List with all generated Trajectories.
@@ -176,7 +176,7 @@ The deletion and export of Trajectories is shown in the following clip:
 
 <p align="center">
 <img src="docs/images/export_edit.gif">
-<figcaption>Deleting and exporting Trajectories.</figcaption>
+<em>Deleting and exporting Trajectories.</em>
 </p>
 
 
@@ -188,5 +188,5 @@ two Trajectory-bundles in a given room:
 
 <p align="center">
 <img src="docs/images/example_edit.gif">
-<figcaption>Example-Workflow with *TrajectoryGenerator*.</figcaption>
+<em>Example-Workflow with "TrajectoryGenerator".</em>
 </p>
