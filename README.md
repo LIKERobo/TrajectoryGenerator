@@ -4,7 +4,7 @@ user-given Waypoints.
 
 <p align="center">
 <img src="docs/images/Example.png">
-<figcaption>Example Trajectories, generated with *TrajectoryGenerator*.</figcaption>
+<em>Example Trajectories, generated with *TrajectoryGenerator*.</em>
 </p>
 
 ## Requirements
