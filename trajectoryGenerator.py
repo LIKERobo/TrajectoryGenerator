@@ -280,14 +280,14 @@ class TrajectoryGeneratorGui(wx.Frame):
             self.oNB.TraceTab.trace_clear()
             try:
                 with open(pathname, "r") as f:
-                    reader = csv.reader(f,delimiter=",", \
-                                        quotechar="#")
+                    reader = csv.reader(f,delimiter=",")
                     for row in reader:
-                        try:
-                            x, y = int(row[0]), int(row[1])
-                            self.oNB.TraceTab.trace_add(x,y)
-                        except ValueError:
-                            continue
+                        if row and len(row) == 2:
+                            try:
+                                x, y = int(row[0]), int(row[1])
+                                self.oNB.TraceTab.trace_add(x,y)
+                            except ValueError:
+                                continue
                 self.plot_trace()
             except IOError:
                 msg = "Could not write to file: "+pathname
