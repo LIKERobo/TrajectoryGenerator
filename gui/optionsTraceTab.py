@@ -13,6 +13,9 @@ class EditableListCtrl(wx.ListCtrl, listmix.TextEditMixin):
 
 class OptionsTraceTab(wx.Panel):
     def __init__(self, parent):
+        print("asdasd")
+        print(self)
+        print(parent.db_path)
         self.index = 0
         wx.Panel.__init__(self, parent, id=wx.ID_ANY)
         outer_box = wx.BoxSizer(wx.VERTICAL)
@@ -57,18 +60,18 @@ class OptionsTraceTab(wx.Panel):
         self.trace.SetStringItem(self.index, 2, str(y))
         self.index += 1
 
-    def trace_read(self):
-        valid_x, valid_y = self.trace_validate()
-        if False in (valid_x, valid_y):
-            return valid_x, valid_y
+    # def trace_read(self):
+    #     valid_x, valid_y = self.trace_validate()
+    #     if False in (valid_x, valid_y):
+    #         return valid_x, valid_y
 
-        trace_x, trace_y = [], []
-        for i in range(self.index):
-            # x = int(self.trace.GetItemText(i, 1))
-            # y = int(self.trace.GetItemText(i, 2))
-            trace_x.append(int(self.trace.GetItemText(i, 1)))
-            trace_y.append(int(self.trace.GetItemText(i, 2)))
-        return trace_x, trace_y
+    #     trace_x, trace_y = [], []
+    #     for i in range(self.index):
+    #         # x = int(self.trace.GetItemText(i, 1))
+    #         # y = int(self.trace.GetItemText(i, 2))
+    #         trace_x.append(int(self.trace.GetItemText(i, 1)))
+    #         trace_y.append(int(self.trace.GetItemText(i, 2)))
+    #     return trace_x, trace_y
 
     def trace_clear(self):
         self.trace.DeleteAllItems()

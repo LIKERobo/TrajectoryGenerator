@@ -6,9 +6,10 @@ from gui.optionsResultsTab import OptionsResultsTab
 
 class OptionsNotebook(wx.Notebook):
 
-    def __init__(self, parent):
+    def __init__(self, parent, db_path):
         wx.Notebook.__init__(self, parent, id=wx.ID_ANY, \
                              style=wx.BK_DEFAULT)
+        self.db_path = db_path
         self.init_UI()
         self.init_bindings()
 
