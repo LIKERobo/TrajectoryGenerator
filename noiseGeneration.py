@@ -19,11 +19,20 @@ def add_simple_noise(trace_x, trace_y, noise):
     assert (len(trace_x) > 0) and \
         (len(trace_y) > 0) and \
         (len(trace_x) == len(trace_y))
-    xn = (trace_x + np.random.normal(0, noise, \
-                                     len(trace_x)).astype(int)).tolist()
-    yn = (trace_y + np.random.normal(0, noise, \
-                                     len(trace_y)).astype(int)).tolist()
+    if isinstance(trace_x, list):
+        xn = (trace_x + np.random.normal(0, noise, \
+                                         len(trace_x)).astype(int)).tolist()
+        yn = (trace_y + np.random.normal(0, noise, \
+                                         len(trace_y)).astype(int)).tolist()
+    elif isinstance(trace_x, np.ndarray):
+        xn = (trace_x + np.random.normal(0, noise, \
+                                         trace_x.shape).astype(int)).tolist()
+        yn = (trace_y + np.random.normal(0, noise, \
+                                         trace_y.shape).astype(int)).tolist()
+    else:
+        raise TypeError("Invalid trace-types:",type(trace_x),",",type(trace_y))
     return xn, yn
+    
 
 def add_complex_noise(trace_x, trace_y, cov):
     """Adds noise from multivariate gaussian to traces.

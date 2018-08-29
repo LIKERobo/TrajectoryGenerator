@@ -65,21 +65,12 @@ def validate_point(x, y, worldMap, batch):
     if not (0 <= x < xsize):
         msg = "Invalid Trace-X-Position: "+str(x)+" with Image-X-Size: "+str(xsize)
         msg += "\nMaybe modify the trace-points or reduce noise to create a valid trace."
-        if batch:
-            warnings.warn(msg)
-        else:
-            wx.MessageBox(msg, 'Error', \
-                          wx.OK | wx.ICON_ERROR)
-            return True
+        raise ValueError(msg)
     if not (0 <= y < xsize):
         msg = "Invalid Trace-Y-Position: "+str(y)+" with Image-Y-Size: "+str(ysize)
         msg += "\nMaybe modify the trace-points or reduce noise to create a valid trace."
-        if batch:
-            warnings.warn(msg)
-        else:
-            wx.MessageBox(msg, 'Error', \
-                          wx.OK | wx.ICON_ERROR)
-        return True
+        raise ValueError(msg)
+
     if worldMap[y][x] == 1:
         return False
     else:

@@ -57,31 +57,49 @@ class OptionsSettingsTab(wx.Panel):
 
         """ Simulation"""
         self.rb_sim = wx.RadioButton(self, label="Simulation")
-        self.tx_sim_method = wx.StaticText(self, label="Method: ")
-        tt_sim = "Specifies the kind of interpolation for values" +\
-                    "between the trace-points."
-        self.tx_sim_method.SetToolTip(tt_sim)
-        self.sims = ["Seek", "Wander"]
-        self.cb_sim = wx.ComboBox(self, choices=self.sims, \
+        # self.tx_sim_title= wx.StaticText(self, label="Traj.,Bases")
+
+        self.tx_sim_n = wx.StaticText(self, label="Number (Traj,Base):")
+        self.tc_sim_n = wx.TextCtrl(self)
+
+        self.tx_sim_len= wx.StaticText(self,label="Length (Traj,Base):")
+        self.tc_sim_len= wx.TextCtrl(self)
+
+
+        self.tx_sim_basetype = wx.StaticText(self, label="Base-type: ")
+        # tt_sim = "Specifies the kind of interpolation for values" +\
+        #             "between the trace-points."
+        # self.tx_sim_method.SetToolTip(tt_sim)
+        self.base_choices = ["Linear", "Uniform", "Normal"]
+        self.cb_sim_basetype = wx.ComboBox(self, choices=self.base_choices, \
                                      style=wx.CB_READONLY)
-        self.tx_sim_mass = wx.StaticText(self, label="Mass:")
-        self.tc_sim_mass = wx.TextCtrl(self)
 
-        self.tx_sim_dt = wx.StaticText(self, label="dt:")
-        self.tc_sim_dt = wx.TextCtrl(self)
+        self.tx_sim_basepath = wx.StaticText(self, label="Base-path:")
+        self.tc_sim_basepath = wx.TextCtrl(self)
 
-        self.tx_sim_vmax = wx.StaticText(self, label="vMax:")
-        self.tc_sim_vmax = wx.TextCtrl(self)
+        self.tx_sim_ls = wx.StaticText(self,label="Length-scale:")
+        self.tc_sim_ls = wx.TextCtrl(self)
 
-        self.tx_sim_rgoal = wx.StaticText(self, label="rGoal:")
-        self.tc_sim_rgoal = wx.TextCtrl(self)
+        self.tx_sim_scale = wx.StaticText(self,label="Total-scale:")
+        self.tc_sim_scale = wx.TextCtrl(self)
+
+        self.tx_sim_covtype = wx.StaticText(self, label="Covariance-type: ")
+        # tt_sim = "Specifies the kind of interpolation for values" +\
+        #             "between the trace-points."
+        # self.tx_sim_method.SetToolTip(tt_sim)
+        self.cov_choices = ["RBF","Matern"]
+        self.cb_sim_covtype = wx.ComboBox(self, choices=self.cov_choices, \
+                                     style=wx.CB_READONLY)
 
 
-        self.sim_widgets = [self.tx_sim_method, self.cb_sim,\
-                            self.tx_sim_mass, self.tc_sim_mass,\
-                            self.tx_sim_dt, self.tc_sim_dt,\
-                            self.tx_sim_vmax, self.tc_sim_vmax,\
-                            self.tx_sim_rgoal, self.tc_sim_rgoal]
+        self.sim_widgets = [#self.tx_sim_title,\
+                            self.tx_sim_n, self.tc_sim_n,\
+                            self.tx_sim_len, self.tc_sim_len,\
+                            self.tx_sim_basetype, self.cb_sim_basetype,\
+                            self.tx_sim_basepath, self.tc_sim_basepath,\
+                            self.tx_sim_ls, self.tc_sim_ls,\
+                            self.tx_sim_scale, self.tc_sim_scale,\
+                            self.tx_sim_covtype, self.cb_sim_covtype]
 
         r""" Settings """
         line2 = wx.StaticLine(self)
@@ -91,7 +109,6 @@ class OptionsSettingsTab(wx.Panel):
         self.tc_label = wx.TextCtrl(self)
 
         self.btn_run = wx.Button(self, label="Run")
-        #
         self.Bind(wx.EVT_BUTTON, self.save_defaults, self.btn_run)
 
         std_flags = wx.ALIGN_CENTER_VERTICAL|wx.ALL
@@ -113,23 +130,38 @@ class OptionsSettingsTab(wx.Panel):
 
         sizer.Add(self.rb_sim, pos=(6,0), span=(1,2), \
                   flag=exp_flags, border=5)
-        sizer.Add(self.tx_sim_method, pos=(7,1), flag=std_flags, border=5)
-        sizer.Add(self.cb_sim, pos=(7,2), flag=std_flags, border=5)
-        sizer.Add(self.tx_sim_mass, pos=(8,1), flag=std_flags, border=5)
-        sizer.Add(self.tc_sim_mass, pos=(8,2), flag=std_flags, border=5)
-        sizer.Add(self.tx_sim_dt, pos=(9,1), flag=std_flags, border=5)
-        sizer.Add(self.tc_sim_dt, pos=(9,2), flag=std_flags, border=5)
-        sizer.Add(self.tx_sim_vmax, pos=(10,1), flag=std_flags, border=5)
-        sizer.Add(self.tc_sim_vmax, pos=(10,2), flag=std_flags, border=5)
-        sizer.Add(self.tx_sim_rgoal, pos=(11,1), flag=std_flags, border=5)
-        sizer.Add(self.tc_sim_rgoal, pos=(11,2), flag=std_flags, border=5)
 
-        sizer.Add(line2, pos=(12,0), span=(1,3), flag=exp_flags, border=5)
-        sizer.Add(tx_nr, pos=(13,0), flag=std_flags, border=5)
-        sizer.Add(self.tc_nr, pos=(13,1), flag=std_flags, border=5)
-        sizer.Add(tx_label, pos=(14,0), flag=std_flags, border=5)
-        sizer.Add(self.tc_label, pos=(14,1), flag=std_flags, border=5)
-        sizer.Add(self.btn_run, pos=(15,1), flag=std_flags, border=5)
+        # sizer.Add(self.tx_sim_title, pos=(7,2), flag=std_flags, border=5)
+
+        sizer.Add(self.tx_sim_n, pos=(7,1), flag=std_flags, border=5)
+        sizer.Add(self.tc_sim_n, pos=(7,2), flag=std_flags, border=5)
+
+        sizer.Add(self.tx_sim_len, pos=(8,1), flag=std_flags, border=5)
+        sizer.Add(self.tc_sim_len, pos=(8,2), flag=std_flags, border=5)
+
+
+        sizer.Add(self.tx_sim_basetype, pos=(9,1), flag=std_flags, border=5)
+        sizer.Add(self.cb_sim_basetype, pos=(9,2), span=(1,2),flag=std_flags, border=5)
+
+        sizer.Add(self.tx_sim_basepath, pos=(10,1), flag=std_flags, border=5)
+        sizer.Add(self.tc_sim_basepath, pos=(10,2), flag=std_flags, border=5)
+
+        sizer.Add(self.tx_sim_ls, pos=(11,1), flag=std_flags, border=5)
+        sizer.Add(self.tc_sim_ls, pos=(11,2), flag=std_flags, border=5)
+
+        sizer.Add(self.tx_sim_scale, pos=(12,1), flag=std_flags, border=5)
+        sizer.Add(self.tc_sim_scale, pos=(12,2), flag=std_flags, border=5)
+
+        sizer.Add(self.tx_sim_covtype, pos=(13,1), flag=std_flags, border=5)
+        sizer.Add(self.cb_sim_covtype, pos=(13,2), flag=std_flags, border=5)
+        #####
+
+        sizer.Add(line2, pos=(14,0), span=(1,3), flag=exp_flags, border=5)
+        sizer.Add(tx_nr, pos=(15,0), flag=std_flags, border=5)
+        sizer.Add(self.tc_nr, pos=(15,1), flag=std_flags, border=5)
+        sizer.Add(tx_label, pos=(16,0), flag=std_flags, border=5)
+        sizer.Add(self.tc_label, pos=(16,1), flag=std_flags, border=5)
+        sizer.Add(self.btn_run, pos=(15,2), flag=std_flags, border=5)
 
         outer_box.Add(sizer, 1, wx.ALL, border=10)
         self.SetSizer(outer_box)
@@ -164,11 +196,17 @@ class OptionsSettingsTab(wx.Panel):
                 config["factor"] = float(self.tc_interp_factor.GetValue())
             else:
                 config["method"] = "Simulation"
-                config["kind"] = self.cb_sim.GetStringSelection()
-                config["mass"] = float(self.tc_sim_mass.GetValue())
-                config["dt"] = float(self.tc_sim_dt.GetValue())
-                config["vmax"] = float(self.tc_sim_vmax.GetValue())
-                config["rgoal"] = float(self.tc_sim_rgoal.GetValue())
+                n_total, n_base = [int(el) for el in self.tc_sim_n.GetValue().split(",")]
+                len_total, len_base = [int(el) for el in self.tc_sim_len.GetValue().split(",")]
+                config["n_total"] = n_total
+                config["len_total"] = len_total
+                config["n_base"] = n_base
+                config["len_base"] = len_base
+                config["base_type"] = self.cb_sim_basetype.GetStringSelection()
+                config["base_path"] = self.tc_sim_basepath.GetValue()
+                config["length_scale"] = float(self.tc_sim_ls.GetValue())
+                config["scale"] = float(self.tc_sim_scale.GetValue())
+                config["cov_type"] = self.cb_sim_covtype.GetStringSelection()
             # else:
             #     msg = "Something went terribly wrong...."
             #     raise ValueError(msg)
@@ -190,14 +228,20 @@ class OptionsSettingsTab(wx.Panel):
             self.rb_sim.SetValue(False)
             self.cb_interp_kind.SetSelection(self.interps.index(config["Generation"]["kind"]))
             self.tc_interp_factor.SetValue(str(int(float(config["Generation"]["factor"]))))
+            self.on_choose_interp(None)
         elif config["Generation"]["method"] == "Simulation":
             self.rb_interp.SetValue(False)
             self.rb_sim.SetValue(True)
-            self.cb_sim.SetSelection(self.sims.index(config["Generation"]["kind"]))
-            self.tc_sim_mass.SetValue(str(config["Generation"]["mass"]))
-            self.tc_sim_dt.SetValue(str(config["Generation"]["dt"]))
-            self.tc_sim_vmax.SetValue(str(config["Generation"]["vmax"]))
-            self.tc_sim_rgoal.SetValue(str(config["Generation"]["rgoal"]))
+            self.tc_sim_n.SetValue(str(config["Generation"]["n_total"])+","+\
+                                   str(config["Generation"]["n_base"]))
+            self.tc_sim_len.SetValue(str(config["Generation"]["len_total"])+","+\
+                                   str(config["Generation"]["len_base"]))
+            self.cb_sim_basetype.SetSelection(self.base_choices.index(config["Generation"]["base_type"]))
+            self.tc_sim_basepath.SetValue(str(config["Generation"]["base_path"]))
+            self.tc_sim_ls.SetValue(str(config["Generation"]["length_scale"]))
+            self.tc_sim_scale.SetValue(str(config["Generation"]["scale"]))
+            self.cb_sim_covtype.SetSelection(self.cov_choices.index(config["Generation"]["cov_type"]))
+            self.on_choose_sim(None)
 
         self.tc_nr.SetValue(config["Defaults"]["nr_runs"])
         self.tc_label.SetValue(config["Defaults"]["label"])
@@ -222,11 +266,15 @@ class OptionsSettingsTab(wx.Panel):
             cp["Generation"]["factor"] = str(valid_config["factor"])
         elif valid_config["method"] == "Simulation":
             cp["Generation"]["method"] = "Simulation"
-            cp["Generation"]["kind"] = valid_config["kind"]
-            cp["Generation"]["mass"] = str(valid_config["mass"])
-            cp["Generation"]["dt"] = str(valid_config["dt"])
-            cp["Generation"]["vmax"] = str(valid_config["vmax"])
-            cp["Generation"]["rgoal"] = str(valid_config["rgoal"])
+            cp["Generation"]["n_total"] = str(valid_config["n_total"])
+            cp["Generation"]["len_total"] = str(valid_config["len_total"])
+            cp["Generation"]["n_base"] = str(valid_config["n_base"])
+            cp["Generation"]["len_base"] = str(valid_config["len_base"])
+            cp["Generation"]["base_type"] = valid_config["base_type"]
+            cp["Generation"]["base_path"] = valid_config["base_path"]
+            cp["Generation"]["length_scale"] = str(valid_config["length_scale"])
+            cp["Generation"]["scale"] = str(valid_config["scale"])
+            cp["Generation"]["cov_type"] = valid_config["cov_type"]
         with open(self.config_path, "w") as config_file:
             cp.write(config_file)
         evt.Skip()
@@ -267,7 +315,7 @@ if __name__ == "__main__":
             res = self.SetTab.on_collect_config()
             for key in res:
                 print(key,' - ',res[key])
-            
+
     app = wx.App()
     frame = DemoFrame()
     app.MainLoop()

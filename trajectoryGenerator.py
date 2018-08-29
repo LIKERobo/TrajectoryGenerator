@@ -18,14 +18,14 @@ from gui.settingsFrame import SettingsFrame
 from mapCreation import image2array
 from validation import validate_trace
 from noiseGeneration import add_simple_noise
-from walker.interpolatedWalk import interpolated_walk
-from walker.simulatedWalk import SimulatedWalker
+from simulators.interpolatedWalk import interpolated_walk
+from simulators.simulatedWalk import create_trajectories
 
 class TrajectoryGeneratorGui(wx.Frame):
 
     def __init__(self, parent=None, title="TrajectoryGenerator"):
         title = "TrajectoryGenerator"
-        size=(1190,1010)
+        size=(1255,1045)
         wx.Frame.__init__(self, None, wx.ID_ANY, title=title, size=size)
 
         self.init_variables()
@@ -92,6 +92,8 @@ class TrajectoryGeneratorGui(wx.Frame):
         """ --- Settings-Tab """
         self.Bind(wx.EVT_BUTTON, self.on_run_simulation, \
                   self.oNB.SettingsTab.btn_run)
+        #self.Bind(wx.EVT_BUTTON, self.onSize, \
+        #          self.oNB.SettingsTab.btn_run)
 
         """ --- Results-Tab """
         self.Bind(wx.EVT_BUTTON, self.on_rem_results_selection, \
@@ -244,16 +246,27 @@ class TrajectoryGeneratorGui(wx.Frame):
                           wx.OK | wx.ICON_ERROR)
             return
         config["path"] = self.image_path
-        for i in range(config["nr_runs"]):
-            pos, vel, acc = generate_walk(config)
-            self.pNB.ResultsPlot.add_walk(pos[:,0], pos[:,1])
-            index = self.oNB.ResultsTab.add_walk(config["label"])
-            self.pos_dict[index] = pos
-            self.vel_dict[index] = vel
-            self.acc_dict[index] = acc
-        # except ValueError:
-        #     msg = "Invalid-Values in Settings tab:"
-        #     print(msg)
+        if config["method"] == "Interpolation":
+            for i in range(config["nr_runs"]):
+                pos, vel, acc = generate_walk(config)
+                self.pNB.ResultsPlot.add_walk(pos[:,0], pos[:,1])
+                index = self.oNB.ResultsTab.add_walk(config["label"])
+                self.pos_dict[index] = pos
+                self.vel_dict[index] = vel
+                self.acc_dict[index] = acc
+        elif config["method"] == "Simulation":
+            all_pos, all_vel, all_acc = generate_simulated_walk(config)
+            print(all_pos.shape)
+            from matplotlib import pyplot as plt
+            for i in range(all_pos.shape[0]):
+                plt.plot(all_pos[i,:,0],all_pos[i,:,1])
+            plt.show()
+            for i in range(all_pos.shape[0]):
+                self.pNB.ResultsPlot.add_walk(all_pos[i,:,0], all_pos[i,:,1])
+                index = self.oNB.ResultsTab.add_walk(config["label"])
+                self.pos_dict[index] = all_pos[i]
+                self.vel_dict[index] = all_vel[i]
+                self.acc_dict[index] = all_acc[i]
 
     def on_load_images(self, evt):
         wc = "PNG Images (*.png)|*.png|JPG Images (*.jpg,*.jpeg)"
@@ -366,6 +379,8 @@ class TrajectoryGeneratorGui(wx.Frame):
     def on_settings(self, evt):
         SF = SettingsFrame(None)
 
+    def onSize(self, evt):
+        print(self.GetSize())
 
 def generate_walk(config, batch=False):
     # VALIDATION of CONFIG
@@ -381,9 +396,14 @@ def generate_walk(config, batch=False):
         if config["method"] == "Interpolation":
             xs, ys = interpolated_walk(xn, yn, factor=config["factor"],\
                                        kind=config["kind"])
+            print(xs.shape)
         elif config["method"] == "Simulation":
-            JohnCleese = SimulatedWalker(xn, yn, config)
-            xs, ys = JohnCleese.run_simulation()
+            trajectories = create_trajectories(xn, yn, config)
+            xs = trajectories[:,:,0]
+            ys = trajectories[:,:,1]
+            print(trajectories.shape)
+            print(xs.shape)
+            print("huehuehue")
         else:
             print("Invalid Method-Option: ",config["Method"])
             return
@@ -404,7 +424,51 @@ def generate_walk(config, batch=False):
         simCount += 1
     print("Could not create a valid walk...I TRIED!!")
     return
+    
+def generate_simulated_walk(config, batch=False):
+    # VALIDATION of CONFIG
+    simCount = 0
+    x = config["x"][:] #[:] necessary for copying instead of just
+    y = config["y"][:] #referencing the lists
+    worldMap = image2array(config["path"])
+    if not validate_trace(x,y,worldMap, batch):
+        print("Invalid Initial Trace")
+        return
+    while simCount <= 100:
+        sucess = True
+        xn, yn = add_simple_noise(x, y, config["pre_noise"])
 
+        traj = create_trajectories(xn, yn, config)
+        xs = traj[:,:,0]
+        ys = traj[:,:,1]
+
+        pos = np.zeros_like(traj)
+        vel = np.zeros((pos.shape[0], pos.shape[1]-1,2))
+        acc = np.zeros((vel.shape[0], vel.shape[1]-1,2))
+        for i in range(traj.shape[0]):
+            if validate_trace(traj[i,:,0], traj[i,:,1], worldMap, batch):
+                # return xs, ys, worldMap #nur zum Test
+                
+                xfinal, yfinal = add_simple_noise(traj[i,:,0], traj[i,:,1], \
+                    config["post_noise"])
+                pos[i] = np.array([xfinal, yfinal]).T
+
+                vx = (xfinal - np.roll(xfinal,1))[1:]
+                vy = (yfinal - np.roll(yfinal,1))[1:]
+                vel[i] = np.array([vx, vy]).T
+
+                ax = (vx - np.roll(vx,1))[1:]
+                ay = (vy - np.roll(vy,1))[1:]
+                acc[i] = np.array([ax, ay]).T
+            else:
+                sucess = False
+        if sucess:
+            return pos, vel, acc
+
+        simCount += 1
+    print("Could not create a valid walk...I TRIED!!")
+    return
+    
 def batch_walk(path):
     simulations = read_config_file(path)
     count = 0
