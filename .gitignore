@@ -6,3 +6,4 @@ tmp*
 docs/build/*
 .config.yml
 *.ini
+settings.ini
